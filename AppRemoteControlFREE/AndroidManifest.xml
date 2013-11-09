@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="at.db.rc.free"
+    android:versionCode="2"
+    android:versionName="0.2" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<!-- 
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+ -->
+    <uses-sdk
+        android:minSdkVersion="5"
+        android:targetSdkVersion="17" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/remote_control"
+        android:label="@string/app_name" >
+
+        <activity
+            android:name="at.db.rc.activities.Master"
+            android:label="@string/app_name" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="remotehost"
+                    android:scheme="http" />
+            </intent-filter>
+
+            </activity>
+
+        <activity
+            android:name="at.db.rc.activities.DiscoverAndConnect"
+            android:label="DiscoverAndConnect" >
+        </activity>
+
+        <activity
+            android:name="at.db.rc.activities.ScanAndConnect"
+            android:label="ScanAndConnect" >
+        </activity>
+
+        <activity
+            android:name="at.db.rc.activities.SettingsEditor"
+            android:label="Settings" >
+        </activity>
+
+        <activity
+            android:name="at.db.rc.activities.Connector"
+            android:label="Connector" >
+        </activity>
+        
+        <activity
+            android:name="at.db.rc.activities.ServerFileWriter"
+            android:label="ServerFileWriter" >
+        </activity>
+        
+        <!-- activity
+            android:name="com.google.zxing.client.android.CaptureActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.zxing.client.android.SCAN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity -->
+
+	</application>
+
+</manifest>
