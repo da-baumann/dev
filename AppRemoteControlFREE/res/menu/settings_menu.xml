@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/mniSettingsResetDefaults"
+        android:title="@string/settings_mni_reset_defaults">
+    </item>
+    <item
+        android:id="@+id/mniSettingsDiscardChanges"
+        android:title="@string/settings_mni_discard_changes">
+    </item>
+    <item
+        android:id="@+id/mniSettingsSaveAndConnect"
+        android:title="@string/settings_mni_save_and_connect">
+    </item>
+
+</menu>

@@ -1,0 +1,15 @@
+MSG_DESC_REMOTE_CONTROL_SETTINGS_SCAN_SETTINGS=RemoteControl -> Configuración -> Escanear la Configuración
+MSG_ERROR_AN_ERROR_OCCURED=Se ha producido un error
+MSG_ERROR_COULD_NOT_CREATE_CONNECTION_URL=No se pudo crear URL de conexión
+MSG_INFO_0_CONNECTIONS=Remote Control (0 conexiones)
+MSG_INFO_1_CONNECTION=Remote Control (1 conexión)
+MSG_INFO_N_CONNECTIONS=Remote Control (%s conexiones)
+MSG_INFO_APP_STARTING_UP=Se inicia la aplicación!
+MSG_ERROR_PORT_IN_USE=No se pudo iniciar - puerto en uso!
+MNI_CLOSE=Terminar
+MNI_SHOW_SETTINGS_QR_CODE=Mostrar los ajustes mediante QR-Code
+MNI_INSTALL_ANDROID_APP=Instalar la aplicación para Android
+MNI_KEYBOARD_DEUTSCH=Alemán
+MNI_KEYBOARD_ENGLISH=Inglés
+MNI_KEYBOARD_LANGUAGE=Disposición del teclado
+BTN_CLOSE=Cerrar

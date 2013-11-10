@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_main"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <at.db.rc.controls.TextSink
+        android:id="@+id/btnToggleKeyboard"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:text="@string/main_txt_use_keyboard" >
+    </at.db.rc.controls.TextSink>
+
+    <at.db.rc.controls.TouchSink
+        android:id="@+id/viewMousePad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </at.db.rc.controls.TouchSink>
+
+</LinearLayout>

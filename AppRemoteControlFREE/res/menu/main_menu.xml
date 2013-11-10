@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/mniDiscoverAndConnect"
+        android:title="@string/main_mni_discover_amp_connect">
+    </item>
+    <item
+        android:id="@+id/mniScanAndConnect"
+        android:title="@string/main_mni_scan_amp_connect">
+    </item>
+    <item
+        android:id="@+id/mniSettings"
+        android:title="@string/main_mni_settings">
+    </item>
+    <item
+        android:id="@+id/mniWriteServerFile"
+        android:title="@string/main_mni_write_server_file">
+    </item>
+    <item
+        android:id="@+id/mniConnection"
+        android:title="@string/main_mni_connect">
+    </item>
+
+</menu>

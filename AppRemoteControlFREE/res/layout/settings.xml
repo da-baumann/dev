@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TableRow android:background="@android:color/darker_gray" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_grp_server"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_lbl_scan_settings" />
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnScanSettings"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:focusableInTouchMode="true"
+                android:text="@string/settings_btn_scan_settings" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_txt_server_name" />
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtServerName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="textNoSuggestions" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_lbl_server_port" />
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtServerPort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number" />
+            <!--
+            <Spinner
+                android:id="@+id/spnServerProtocol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            -->
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnTestServer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/settings_btn_test_server" />
+        </TableRow>
+
+        <TableRow android:background="@android:color/darker_gray" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_grp_connection"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </TableRow>
+
+        <TableRow>
+
+            <CheckBox
+                android:id="@+id/chkAutoConnect"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_chk_auto_connect" />
+        </TableRow>
+
+        <TableRow>
+
+            <CheckBox
+                android:id="@+id/chkEncryptConnection"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_chk_encrypt_connection" />
+        </TableRow>
+
+        <TableRow>
+
+            <CheckBox
+                android:id="@+id/chkAllowUdpConnection"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_chk_allow_udp_connection" />
+        </TableRow>
+        
+        <!--
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_txt_password" />
+        </TableRow>
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="textPassword" />
+        </TableRow>
+        -->
+
+        <TableRow android:background="@android:color/darker_gray" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_grp_mouse_control"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </TableRow>
+
+        <TableRow>
+
+            <Spinner
+                android:id="@+id/spnMouseController"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow>
+
+            <CheckBox
+                android:id="@+id/chkButtonsEnabled"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_chk_buttons_enabled" />
+        </TableRow>
+
+        <TableRow>
+
+            <CheckBox
+                android:id="@+id/chkScrollbarEnabled"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_chk_scrollbar_enabled" />
+        </TableRow>
+
+        <TableRow>
+
+            <CheckBox
+                android:id="@+id/chkPushToClickEnabled"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_chk_push_to_click_enabled" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_txt_experimental" />
+        </TableRow>
+
+        <!--
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnResetSettings"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/settings_btn_reset" />
+        </TableRow>
+        -->
+
+    </TableLayout>
+
+</ScrollView>

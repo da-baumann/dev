@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Remote Control FREE</string>
+
+    <string name="main_txt_use_keyboard">use keyboard</string>
+    <string name="main_mni_discover_amp_connect">Discover &amp; Connect</string>
+    <string name="main_mni_scan_amp_connect">Scan &amp; Connect</string>
+    <string name="main_mni_settings">Settings</string>
+    <string name="main_mni_write_server_file">Write Server File</string>
+    <string name="main_mni_connect">Connect</string>
+
+    <string name="mni_main_disconnect">Disconnect</string>
+    <string name="mni_main_connect">Connect</string>
+
+    <string name="settings_grp_server">Server</string>
+    <string name="settings_lbl_scan_settings">Scan settings via QR-Code Scanner</string>
+    <string name="settings_btn_scan_settings">Scan Settings</string>
+    <string name="settings_txt_server_name">Server name</string>
+    <string name="settings_lbl_server_port">Server port</string>
+    <string name="settings_btn_test_server">Test Server</string>
+    <string name="settings_grp_connection">Connection</string>
+    <string name="settings_chk_auto_connect">Auto Connect</string>
+    <string name="settings_chk_encrypt_connection">Encrypt Connection</string>
+    <string name="settings_chk_allow_udp_connection">Allow UDP Connection (insecure &amp; fast)</string>
+    <string name="settings_txt_key_hash">Key Hash Code</string>
+    <string name="settings_txt_password">Password</string>
+    <string name="settings_grp_mouse_control">Mouse control</string>
+
+    <string-array name="settings_arr_mouse_controller">
+        <item>Touchpad</item>
+        <item>Pointing Stick *</item>
+        <item>Accelerometer *</item>
+    </string-array>
+
+    <string name="settings_chk_buttons_enabled">Buttons Enabled</string>
+    <string name="settings_chk_scrollbar_enabled">Scroll-bar Enabled</string>
+    <string name="settings_chk_push_to_click_enabled">Push To Click *</string>
+    <string name="settings_txt_experimental">* These features are EXPERIMENTAL!</string>
+    <string name="settings_btn_reset">Reset</string>
+
+    <string name="settings_mni_reset_defaults">Reset Defaults</string>
+    <string name="settings_mni_discard_changes">Discard Changes</string>
+    <string name="settings_mni_save_and_connect">Save and Connect</string>
+
+    <string name="msg_error_sd_not_writable">SD-Card is not writable</string>
+    <string name="msg_question_replace_file">File already exists. Replace it?</string>
+    <string name="msg_question_result_yes">Yes</string>
+    <string name="msg_question_result_no">No</string>
+
+    <string name="msg_question_server_file_downloaded_header">Already downloaded the server App?</string>
+    <string name="msg_question_server_file_downloaded_message">Download the free server App at http://daniel-baumann.at</string>
+    <string name="msg_question_result_proceed">Proceed</string>
+    <string name="msg_info_result_ok">OK</string>
+
+    <string name="msg_title_save_server_app">Saving server to SD-Card</string>
+    <string name="msg_error_not_enough_space">Not enough space on SD-Card</string>
+    <string name="msg_error_networkt_not_reachable">Network not reachable</string>
+    <string name="msg_error_no_server_found">No Server found</string>
+    <string name="msg_error_could_not_connect_to_server">Could not connect to server:</string>
+    <string name="msg_success_server_file_wrtten">Server file written to:</string>
+    <string name="msg_progress_testing_connection">Testing connection ...</string>
+    <string name="msg_progress_connection_ok">connection OK</string>
+    <string name="msg_progress_could_not_connect">Could not connect to server!</string>
+    <string name="msg_progress_connecting">Connecting ...</string>
+
+    <string name="lyt_write_server_file">Write Server File</string>
+    <string name="lyt_settings_editor">Settings Editor</string>
+    <string name="lyt_scan_and_connect">Scan and Connect</string>
+    <string name="lyt_remote_control">Remote Control</string>
+    <string name="lyt_discover_and_connect">Discover and Connect</string>
+    <string name="lyt_connector">Connector</string>
+
+</resources>

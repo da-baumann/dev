@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Remote Control FREE</string>
+
+    <string name="main_txt_use_keyboard">utilizar el teclado</string>
+    <string name="main_mni_discover_amp_connect">Descubrir y Conectarse</string>
+    <string name="main_mni_scan_amp_connect">Escanear y Conectar</string>
+    <string name="main_mni_settings">Configuración</string>
+    <string name="main_mni_write_server_file">Escribe servidor</string>
+    <string name="main_mni_connect">Conectar</string>
+
+    <string name="mni_main_disconnect">Desconectar</string>
+    <string name="mni_main_connect">Conectar</string>
+
+    <string name="settings_grp_server">Server</string>
+    <string name="settings_lbl_scan_settings">Escanear la Configuración a través un QR-Code</string>
+    <string name="settings_btn_scan_settings">Escanear la Configuración</string>
+    <string name="settings_txt_server_name">Nombre del servidor</string>
+    <string name="settings_lbl_server_port">Puerto del servidor</string>
+    <string name="settings_btn_test_server">Pruebe el servidor</string>
+    <string name="settings_grp_connection">Conexión</string>
+    <string name="settings_chk_auto_connect">Conectar automáticamente</string>
+    <string name="settings_chk_encrypt_connection">Cifrar conexión</string>
+    <string name="settings_chk_allow_udp_connection">Permitir conexión UDP (inseguro y rápido)</string>
+    <string name="settings_txt_key_hash">Hashcode de la tecla</string>
+    <string name="settings_txt_password">Contraseña</string>
+    <string name="settings_grp_mouse_control">Control del ratón</string>
+
+    <string-array name="settings_arr_mouse_controller">
+        <item>Touchpad</item>
+        <item>Pointing Stick *</item>
+        <item>Acelerómetro *</item>
+    </string-array>
+
+    <string name="settings_chk_buttons_enabled">Botones activo</string>
+    <string name="settings_chk_scrollbar_enabled">Scrollbar activo</string>
+    <string name="settings_chk_push_to_click_enabled">Push To Click *</string>
+    <string name="settings_txt_experimental">* Esas propiedades son EXPERIMENTAL!</string>
+    <string name="settings_btn_reset">Reiniciar</string>
+
+    <string name="settings_mni_reset_defaults">Restaurar ajustes de fábrica</string>
+    <string name="settings_mni_discard_changes">Descartar los cambios</string>
+    <string name="settings_mni_save_and_connect">Guardar y conectar</string>
+
+    <string name="msg_error_sd_not_writable">No se puede escribir a SD-Card</string>
+    <string name="msg_question_replace_file">El archivo ya existe. Sobrescribir lo?</string>
+    <string name="msg_question_result_yes">Sí</string>
+    <string name="msg_question_result_no">No</string>
+
+    <string name="msg_question_server_file_downloaded_header">Ya descargado la aplicación del servidor?</string>
+    <string name="msg_question_server_file_downloaded_message">Descargar la aplicación servidor gratuito de http://daniel-baumann.at</string>
+    <string name="msg_question_result_proceed">Seguir</string>
+    <string name="msg_info_result_ok">OK</string>
+
+    <string name="msg_title_save_server_app">Guardar la aplicación servidor a la SD-Card</string>
+    <string name="msg_error_not_enough_space">No hay suficiente espacio en la SD-Card</string>
+    <string name="msg_error_networkt_not_reachable">Red no es accesible</string>
+    <string name="msg_error_no_server_found">No se han encontrado servidor</string>
+    <string name="msg_error_could_not_connect_to_server">No se pudo conectar con el servidor:</string>
+    <string name="msg_success_server_file_wrtten">Archivo del servidor escrito a:</string>
+    <string name="msg_progress_testing_connection">Probando la conexión ...</string>
+    <string name="msg_progress_connection_ok">Conexión OK</string>
+    <string name="msg_progress_could_not_connect">No se pudo conectar con el servidor!</string>
+    <string name="msg_progress_connecting">Conectando ...</string>
+
+    <string name="lyt_write_server_file">Escribe aplicación de servidor</string>
+    <string name="lyt_settings_editor">Editor de configuración</string>
+    <string name="lyt_scan_and_connect">Escanear y Conectar</string>
+    <string name="lyt_remote_control">Remote Control</string>
+    <string name="lyt_discover_and_connect">Descubrir y conectarse</string>
+    <string name="lyt_connector">Conector</string>
+
+</resources>

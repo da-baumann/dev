@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Remote Control FREE</string>
+
+    <string name="main_txt_use_keyboard">Tastatur verwenden</string>
+    <string name="main_mni_discover_amp_connect">Suchen &amp; Verbinden</string>
+    <string name="main_mni_scan_amp_connect">Scanne &amp; Verbinden</string>
+    <string name="main_mni_settings">Einstellungen</string>
+    <string name="main_mni_write_server_file">Server App speichern</string>
+    <string name="main_mni_connect">Verbinden</string>
+
+    <string name="mni_main_disconnect">Trennen</string>
+    <string name="mni_main_connect">Verbinden</string>
+
+    <string name="settings_grp_server">Server</string>
+    <string name="settings_lbl_scan_settings">Scanne Einstellungen mittels QR-Code</string>
+    <string name="settings_btn_scan_settings">Scanne Einstellungen</string>
+    <string name="settings_txt_server_name">Server Name</string>
+    <string name="settings_lbl_server_port">Server Port</string>
+    <string name="settings_btn_test_server">Serververbindung testen</string>
+    <string name="settings_grp_connection">Verbindung</string>
+    <string name="settings_chk_auto_connect">Automatisch verbinden</string>
+    <string name="settings_chk_encrypt_connection">Verbindung verschlüsseln</string>
+    <string name="settings_chk_allow_udp_connection">Erlaube UDP Verbindung (unsicher &amp; schnell)</string>
+    <string name="settings_txt_key_hash">Schlüssel signatur</string>
+    <string name="settings_txt_password">Passwort</string>
+    <string name="settings_grp_mouse_control">Maus Kontrolle</string>
+
+    <string-array name="settings_arr_mouse_controller">
+        <item>Tastfeld</item>
+        <item>Pointing Stick *</item>
+        <item>Beschleunigungssensor *</item>
+    </string-array>
+
+    <string name="settings_chk_buttons_enabled">Aktiviere Knöpfe</string>
+    <string name="settings_chk_scrollbar_enabled">Aktiviere Rollbalken</string>
+    <string name="settings_chk_push_to_click_enabled">Push To Click *</string>
+    <string name="settings_txt_experimental">* Diese Eigenschaften sind EXPERIMENTELL!</string>
+    <string name="settings_btn_reset">Zurücksetzen</string>
+
+    <string name="settings_mni_reset_defaults">Auf Standard zurücksetzen</string>
+    <string name="settings_mni_discard_changes">Änderungen verwerfen</string>
+    <string name="settings_mni_save_and_connect">Speichern und verbinden</string>
+
+    <string name="msg_error_sd_not_writable">Die Speicherkarte ist nicht beschreibbar</string>
+    <string name="msg_question_replace_file">Datei existiert bereits. Datei ersätzen?</string>
+    <string name="msg_question_result_yes">Ja</string>
+    <string name="msg_question_result_no">Nein</string>
+
+    <string name="msg_question_server_file_downloaded_header">Server App bereits heruntergeladen?</string>
+    <string name="msg_question_server_file_downloaded_message">Lade die gratis Server App runter: http://daniel-baumann.at</string>
+    <string name="msg_question_result_proceed">Weiter</string>
+    <string name="msg_info_result_ok">OK</string>
+
+    <string name="msg_title_save_server_app">Speichere Server App auf die Speicherkarte</string>
+    <string name="msg_error_not_enough_space">Nicht genug Platz auf der Speicherkarte</string>
+    <string name="msg_error_networkt_not_reachable">Netzwerk nicht erreichbar</string>
+    <string name="msg_error_no_server_found">Kein Server gefunden</string>
+    <string name="msg_error_could_not_connect_to_server">Konnte keine Verbindung zum Server aufbauen:</string>
+    <string name="msg_success_server_file_wrtten">Server Datei wurde geschrieben:</string>
+    <string name="msg_progress_testing_connection">Teste Verbindung ...</string>
+    <string name="msg_progress_connection_ok">Verbindung OK</string>
+    <string name="msg_progress_could_not_connect">Konnte keine Verbindung zum Server aufbauen!</string>
+    <string name="msg_progress_connecting">Verbinden ...</string>
+
+    <string name="lyt_write_server_file">Speichere Server App</string>
+    <string name="lyt_settings_editor">Einstellungen</string>
+    <string name="lyt_scan_and_connect">Scanne und Verbinde</string>
+    <string name="lyt_remote_control">Remote Control</string>
+    <string name="lyt_discover_and_connect">Suche und Verbinde</string>
+    <string name="lyt_connector">Connector</string>
+
+</resources>
