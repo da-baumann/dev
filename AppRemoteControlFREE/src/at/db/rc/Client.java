@@ -15,13 +15,8 @@
  */
 package at.db.rc;
 
-import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.net.SocketFactory;
+import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -45,28 +40,26 @@ import at.db.rc.interfaces.ITextListener;
 
 public class Client implements ITextListener, SensorEventListener, ITerminationListener {
 
-	public static final String					TAG									= Client.class.getName();
-	private final ITerminationListener	terminationListener	= this;
-	private final ExecutorService				executorService			= Executors.newSingleThreadExecutor();
+	public static final String	TAG									= Client.class.getName();
 
-	private String											serverAddress				= null;
-	private int													serverPort					= 0;
-	private boolean											autoConnect					= true;
-	private boolean											encryptConnection		= true;
-	private boolean											allowUdpConnection	= false;
-	private int													highPressureBit			= 0;
+	private String							serverAddress				= null;
+	private int									serverPort					= 0;
+	private boolean							autoConnect					= true;
+	private boolean							encryptConnection		= true;
+	private boolean							allowUdpConnection	= false;
+	private int									highPressureBit			= 0;
 
-	private String											password						= null;
-	private MouseController							mouseController			= MouseController.TOUCH_PAD;
-	private IRegionProvider							regionProvider;
+	private String							password						= null;
+	private MouseController			mouseController			= MouseController.TOUCH_PAD;
+	private IRegionProvider			regionProvider;
 
-	private FastClient									endPoint						= null;
-	private Region											downRegion					= null;
-	private Master											master							= null;
+	private FastClient					endPoint						= null;
+	private Region							downRegion					= null;
+	private Master							master							= null;
 
-	private long												lastConnectionError	= 0;
+	private long								lastConnectionError	= 0;
 
-	private long												lastSensorChangeTime;
+	private long								lastSensorChangeTime;
 
 	public Client(Master master) {
 		this.master = master;
@@ -74,20 +67,13 @@ public class Client implements ITextListener, SensorEventListener, ITerminationL
 
 	public synchronized void connect() {
 		try {
-			executorService.submit(new Callable<Object>() {
-				public Object call() throws Exception {
-					if (!isConnected()) {
-						SocketFactory socketfactory = SocketFactory.getDefault();
-						Socket socket = socketfactory.createSocket(getServerAddress(), getServerPort());
-						endPoint = new FastClient(socket, EndPointType.CLIENT);
-						endPoint.setEncryptConnection(encryptConnection);
-						endPoint.setAllowUdpConnection(allowUdpConnection);
-						endPoint.dispatchConnect(null, password);
-						endPoint.setTerminationListener(terminationListener);
-					}
-					return null;
-				}
-			}).get();
+			if (!isConnected()) {
+				endPoint = new FastClient(getServerAddress(), getServerPort(), EndPointType.CLIENT);
+				endPoint.setEncryptConnection(encryptConnection);
+				endPoint.setAllowUdpConnection(allowUdpConnection);
+				endPoint.dispatchConnect(null, password);
+				endPoint.setTerminationListener(Client.this);
+			}
 		} catch (Exception e) {
 			if ((System.currentTimeMillis() - lastConnectionError) > 5000) {
 				String message = master.getString(A.string.msg_error_could_not_connect_to_server) + "\n" + e.getMessage();
@@ -100,21 +86,15 @@ public class Client implements ITextListener, SensorEventListener, ITerminationL
 
 	public boolean testConnect() {
 		try {
-			return executorService.submit(new Callable<Boolean>() {
-				public Boolean call() throws Exception {
-						if (isConnected()) {
-							disconnect();
-						}
-						SocketFactory socketfactory = SocketFactory.getDefault();
-						Socket socket = socketfactory.createSocket(getServerAddress(), getServerPort());
-						endPoint = new FastClient(socket, EndPointType.CLIENT);
-						endPoint.setEncryptConnection(encryptConnection);
-						endPoint.dispatchConnect(null, password);
-						endPoint.setTerminationListener(terminationListener);
-						disconnect();
-						return true;
-				}
-			}).get();
+			if (isConnected()) {
+				disconnect();
+			}
+			endPoint = new FastClient(getServerAddress(), getServerPort(), EndPointType.CLIENT);
+			endPoint.setEncryptConnection(encryptConnection);
+			endPoint.dispatchConnect(null, password);
+			endPoint.setTerminationListener(Client.this);
+			disconnect();
+			return true;
 		} catch (Exception e) {
 			Log.i(TAG, e.toString());
 		}
@@ -289,8 +269,12 @@ public class Client implements ITextListener, SensorEventListener, ITerminationL
 			}
 			return true;
 
-		} catch (SocketException e) {
-			disconnect();
+		} catch (ExecutionException e) {
+			if (e.getCause() instanceof SocketException) {
+				disconnect();
+			} else if (e.getCause() != null) {
+				Log.i(TAG, e.getCause().toString());
+			}
 		} catch (Exception e) {
 			Log.i(TAG, e.toString());
 		}

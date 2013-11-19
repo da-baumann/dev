@@ -15,12 +15,16 @@
  */
 package at.db.rc.activities;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -37,6 +41,8 @@ public class DiscoverAndConnect extends Activity {
 	public static final String	TAG								= DiscoverAndConnect.class.getName();
 
 	public static final byte[]	BROADCAST_ADDRESS	= { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+
+	private final ExecutorService				executorService			= Executors.newSingleThreadExecutor();
 	private int									port							= Parameters.DEFAULT_PORT;
 
 	@Override
@@ -44,13 +50,19 @@ public class DiscoverAndConnect extends Activity {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(A.string.lyt_discover_and_connect);
-			discoverServer();
+			executorService.submit(new Callable<Object>() {
+				public Void call() throws Exception {
+					discoverServer();
+					return null;
+				}
+			}).get();
 		} catch (Exception e) {
 			Log.e(TAG, e.toString());
 		}
 	}
 
 	private void discoverServer() {
+		UdpOutputStream outputStream = null;
 		boolean errorDetected = false;
 		DatagramSocket socket = null;
 		String host = null;
@@ -60,7 +72,7 @@ public class DiscoverAndConnect extends Activity {
 			InetAddress broadcastAddress = InetAddress.getByAddress(BROADCAST_ADDRESS);
 			socket = new DatagramSocket();
 			socket.setBroadcast(true);
-			UdpOutputStream outputStream = new UdpOutputStream(socket, broadcastAddress, Parameters.DEFAULT_PORT);
+			outputStream = new UdpOutputStream(socket, broadcastAddress, Parameters.DEFAULT_PORT);
 			data[0] = Parameters.DISCOVERY_REQUEST;
 			outputStream.write(data);
 			outputStream.flush();
@@ -113,6 +125,13 @@ public class DiscoverAndConnect extends Activity {
 		} catch (Exception e) {
 			Log.e(TAG, e.toString());
 		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					Log.e(TAG, e.toString());
+				}
+			}
 			finish();
 		}
 	}

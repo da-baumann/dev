@@ -23,49 +23,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.net.SocketFactory;
 
 import at.db.net.RC4InputStream;
 import at.db.net.RC4OutputStream;
 import at.db.net.UdpOutputStream;
+import at.db.rc.Commands.Command;
+import at.db.rc.Commands.Control;
+import at.db.rc.Commands.Event;
+import at.db.rc.Commands.Status;
 
 public class FastClient implements Runnable {
 
-  /*
-
-  Structure:
-    Type: 2 bit
-
-  00...... CONTROL_COMMAND
-  10...... DATA_COMMAND
-  01...... STATUS_COMMAND
-  ....0000 Type: CONTROL | EVENT | STATUS
-
-  0000.... 0
-  0001.... 1
-  0010.... 2
-  0011.... 3
-  0100.... 4
-  0101.... 5
-  0110.... 6
-  0111.... 7
-  1000.... 8
-  1001.... 9
-  1010.... a
-  1011.... b
-  1100.... c
-  1101.... d
-  1110.... e
-  1111.... f
-
-   */
+	private final ExecutorService				executorService			= Executors.newSingleThreadExecutor();
 
 	public enum EndPointType {
 		SERVER, CLIENT
@@ -73,33 +59,6 @@ public class FastClient implements Runnable {
 
 	private EndPointType					endPointType;
 	private Socket								socket;
-
-	public static final byte			NONE													= 0; // (byte) 0b0000_0000
-
-	public static final byte			COMMAND_MASK									= -64;	// (byte) 0b1100_0000; // 0xc.
-	public static final byte			CONTROL_COMMAND								= 0;	// (byte) 0b0000_0000; // 0x0.
-	public static final byte			DATA_COMMAND									= -128;	// (byte) 0b1000_0000; // 0x8.
-	public static final byte			STATUS_COMMAND								= 64;	// (byte) 0b0100_0000; // 0x4.
-
-	public static final byte			CONTROL_MASK									= 7;	// (byte) 0b0000_0111; // 0x.7
-	public static final byte			HANDSHAKE_START_CONTROL				= 0x00;	// (byte) 0b0000_0000; // 0x.0
-	public static final byte			HANDSHAKE_PUBLIC_KEY_CONTROL	= 0x01;	// (byte) 0b0000_0001; // 0x.1
-	public static final byte			CHECK_PROTOCOL_VERSION				= 0x02;	// (byte) 0b0000_0010; // 0x.2
-	public static final byte			CONNECT												= 0x03;	// (byte) 0b0000_0011; // 0x.3
-	public static final byte			DISCONNECT										= 0x04;	// (byte) 0b0000_0100; // 0x.4
-
-	public static final byte			EVENT_MASK										= 7;	// (byte) 0b0000_0111; // 0x.7
-	public static final byte			MOUSE_EVENT										= 0x00;	// (byte) 0b0000_0000; // 0x.0
-	public static final byte			KEYBOARD_EVENT								= 0x01;	// (byte) 0b0000_0001; // 0x.1
-	public static final byte			MEDIA_CONTROL_EVENT						= 0x02;	// (byte) 0b0000_0010; // 0x.2
-	public static final byte			SCROLL_EVENT									= 0x03;	// (byte) 0b0000_0011; // 0x.3
-	public static final byte			ACCELERATION_EVENT						= 0x04;	// (byte) 0b0000_0100; // 0x.4
-	public static final byte			TEXT_EVENT										= 0x05;	// (byte) 0b0000_0101; // 0x.5
-
-	public static final byte			STATUS_MASK										= 7;	// (byte) 0b0000_0111; // 0x.7
-	public static final byte			SUCCESS												= 0x00;	// (byte) 0b0000_0000; // 0x.0
-	public static final byte			ERROR													= 0x01;	// (byte) 0b0000_0001; // 0x.1
-	public static final byte			WRONG_PASSWORD								= 0x02;	// (byte) 0b0000_0010; // 0x.2
 
 	private DataInputStream				dis;
 	private DataOutputStream			dos;
@@ -124,15 +83,45 @@ public class FastClient implements Runnable {
 	private InputStream						cis;
 	private ITerminationListener	terminationListener						= null;
 
-	public FastClient(Socket socket, EndPointType endPointType) throws IOException {
-		this.socket = socket;
-		this.endPointType = endPointType;
+//	public static void assertNotRunningInMainThread() {
+//		if (Thread.currentThread().getName().equals("main")) {
+//			throw new IllegalStateException("Current operation must not run in main thread");
+//		}
+//	}
+	
+	public FastClient(final String serverAddress, final int serverPort, final EndPointType newEndPointType)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Object>() {
+			public Void call() throws Exception {
+				SocketFactory socketfactory = SocketFactory.getDefault();
+				socket = socketfactory.createSocket(serverAddress, serverPort);
+				endPointType = newEndPointType;
 
-		this.socket.setTcpNoDelay(true);
-		this.socket.setTrafficClass(0x02 | 0x10);
-		this.socket.setPerformancePreferences(1, 2, 0);
-		dis = new DataInputStream(this.socket.getInputStream());
-		dos = new DataOutputStream(this.socket.getOutputStream());
+				socket.setTcpNoDelay(true);
+				socket.setTrafficClass(0x02 | 0x10);
+				socket.setPerformancePreferences(1, 2, 0);
+				dis = new DataInputStream(socket.getInputStream());
+				dos = new DataOutputStream(socket.getOutputStream());
+				return null;
+			}
+		}).get();
+	}
+
+	public FastClient(final Socket newSocket, final EndPointType newEndPointType)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Object>() {
+			public Void call() throws Exception {
+				socket = newSocket;
+				endPointType = newEndPointType;
+
+				socket.setTcpNoDelay(true);
+				socket.setTrafficClass(0x02 | 0x10);
+				socket.setPerformancePreferences(1, 2, 0);
+				dis = new DataInputStream(socket.getInputStream());
+				dos = new DataOutputStream(socket.getOutputStream());
+				return null;
+			}
+		}).get();
 	}
 
 	public Socket getSocket() {
@@ -147,7 +136,7 @@ public class FastClient implements Runnable {
 		this.eventHandler = eventHandler;
 	}
 
-	private byte[] rsaEncrypt(byte[] data) {
+	private byte[] rsaEncrypt(final byte[] data) {
 		try {
 			ByteArrayInputStream bais = new ByteArrayInputStream(data);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -168,7 +157,7 @@ public class FastClient implements Runnable {
 		return null;
 	}
 
-	private byte[] rsaDecrypt(byte[] data) {
+	private byte[] rsaDecrypt(final byte[] data) {
 		try {
 			ByteArrayInputStream bais = new ByteArrayInputStream(data);
 			DataInputStream dis = new DataInputStream(bais);
@@ -189,42 +178,49 @@ public class FastClient implements Runnable {
 		return null;
 	}
 
-	public synchronized void dispatchConnect(byte[] publicKeyHash, String password) throws Exception {
-		if (encryptConnection) {
-			dispatchAuthentification(publicKeyHash);
-		}
-
-		dos.write(CONTROL_COMMAND | CHECK_PROTOCOL_VERSION);
-		dos.writeFloat(protocolVersion);
-		dos.flush();
-		byte command = dis.readByte();
-		if ((command & (COMMAND_MASK | STATUS_MASK)) != (STATUS_COMMAND | SUCCESS)) {
-			// TODO: handle error
-		}
-
-		dos.write(CONTROL_COMMAND | CONNECT);
-		dos.writeUTF(password);
-
-		counter = new Random().nextInt();
-		dos.writeInt(counter);
-		dos.flush();
-		command = dis.readByte();
-		if ((command & COMMAND_MASK) == STATUS_COMMAND) {
-			if ((command & STATUS_MASK) != SUCCESS) {
-				// TODO: handle error
+	public synchronized void dispatchConnect(final byte[] publicKeyHash, final String password)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				if (encryptConnection) {
+					dispatchAuthentification(publicKeyHash);
+				}
+		
+				dos.write(Command.CONTROL | Control.CHECK_PROTOCOL_VERSION);
+				dos.writeFloat(protocolVersion);
+				dos.flush();
+				byte command = dis.readByte();
+				if ((command & (Command.MASK | Status.MASK)) != (Command.STATUS | Status.SUCCESS)) {
+					// TODO: handle error
+				}
+		
+				dos.write(Command.CONTROL | Control.CONNECT);
+				dos.writeUTF(password);
+		
+				counter = new Random().nextInt();
+				dos.writeInt(counter);
+				dos.flush();
+				command = dis.readByte();
+				if ((command & Command.MASK) == Command.STATUS) {
+					if ((command & Status.MASK) != Status.SUCCESS) {
+						// TODO: handle error
+					}
+				}
+				if (allowUdpConnection) {
+					cos = new UdpOutputStream(socket.getInetAddress(), socket.getPort());
+					dos = new DataOutputStream(cos);
+				}
+				return null;
 			}
-		}
-		if (allowUdpConnection) {
-			cos = new UdpOutputStream(socket.getInetAddress(), socket.getPort());
-			dos = new DataOutputStream(cos);
-		}
+		}).get();
 	}
 
-	public synchronized void dispatchAuthentification(byte[] publicKeyHash) throws Exception {
-		dos.write(CONTROL_COMMAND | HANDSHAKE_START_CONTROL);
+	private void dispatchAuthentification(final byte[] publicKeyHash)
+			throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+		dos.write(Command.CONTROL | Control.HANDSHAKE_START);
 		dos.flush();
 		byte command = dis.readByte();
-		if (command != (COMMAND_MASK | HANDSHAKE_PUBLIC_KEY_CONTROL)) {
+		if (command != (Command.MASK | Control.HANDSHAKE_PUBLIC_KEY)) {
 			throw new IOException("Expecting public key, but command dis " + command);
 		}
 		int encodedKeyLength = dis.readUnsignedShort();
@@ -242,10 +238,9 @@ public class FastClient implements Runnable {
 		dispatchFinalizeHandshake(encodedKey);
 	}
 
-	private void dispatchFinalizeHandshake(byte[] encodedKey) throws Exception {
-
-		PublicKey publicKey = KeyFactory.getInstance(Parameters.KEY_ALGORITHM).generatePublic(
-				new X509EncodedKeySpec(encodedKey));
+	private void dispatchFinalizeHandshake(final byte[] encodedKey)
+			throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+		PublicKey publicKey = KeyFactory.getInstance(Parameters.KEY_ALGORITHM).generatePublic( new X509EncodedKeySpec(encodedKey));
 		encryptCipher = Cipher.getInstance(Parameters.CIPHER_TRANSFORMATION);
 		encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
@@ -272,65 +267,108 @@ public class FastClient implements Runnable {
 		return counter;
 	}
 
-	public synchronized void dispatchMouseEvent(byte action, int buttonMask, float x, float y) throws Exception {
-		dos.write(DATA_COMMAND | MOUSE_EVENT);
-		dos.writeInt(getNextCounter());
-		dos.write(action);
-		dos.writeInt(buttonMask);
-		dos.writeFloat(x);
-		dos.writeFloat(y);
-		dos.flush();
+	public synchronized void dispatchMouseEvent(final byte action, final int buttonMask, final float x, final float y)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.DATA | Event.MOUSE);
+				dos.writeInt(getNextCounter());
+				dos.write(action);
+				dos.writeInt(buttonMask);
+				dos.writeFloat(x);
+				dos.writeFloat(y);
+				dos.flush();
+				return null;
+			}
+		}).get();
 	}
 
-	public synchronized void dispatchKeyboardEvent(byte action, int keyCode) throws Exception {
-		dos.write(DATA_COMMAND | KEYBOARD_EVENT);
-		dos.writeInt(getNextCounter());
-		dos.write(action);
-		dos.writeInt(keyCode);
-		dos.flush();
+	public synchronized void dispatchKeyboardEvent(final byte action, final int keyCode)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.DATA | Event.KEYBOARD);
+				dos.writeInt(getNextCounter());
+				dos.write(action);
+				dos.writeInt(keyCode);
+				dos.flush();
+				return null;
+			}
+		}).get();
 	}
 
-	public synchronized void dispatchMediaControlEvent(byte action, int keyCode) throws IOException {
-		dos.write(DATA_COMMAND | MEDIA_CONTROL_EVENT);
-		dos.writeInt(getNextCounter());
-		dos.write(action);
-		dos.writeInt(keyCode);
-		dos.flush();
+	public synchronized void dispatchMediaControlEvent(final byte action, final int keyCode)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.DATA | Event.MEDIA_CONTROL);
+				dos.writeInt(getNextCounter());
+				dos.write(action);
+				dos.writeInt(keyCode);
+				dos.flush();
+				return null;
+			}
+		}).get();
 	}
 
-	public synchronized void dispatchScrollEvent(float y) throws IOException {
-		dos.write(DATA_COMMAND | SCROLL_EVENT);
-		dos.writeInt(getNextCounter());
-		dos.writeFloat(y);
-		dos.flush();
+	public synchronized void dispatchScrollEvent(final float y)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.DATA | Event.SCROLL);
+				dos.writeInt(getNextCounter());
+				dos.writeFloat(y);
+				dos.flush();
+				return null;
+			}
+		}).get();
 	}
 
-	public synchronized void dispatchAccelerationEvent(float x, float y, float z) throws IOException {
-		dos.write(DATA_COMMAND | ACCELERATION_EVENT);
-		dos.writeInt(getNextCounter());
-		dos.writeFloat(x);
-		dos.writeFloat(y);
-		dos.writeFloat(z);
-		dos.flush();
+	public synchronized void dispatchAccelerationEvent(final float x, final float y, final float z)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.DATA | Event.ACCELERATION);
+				dos.writeInt(getNextCounter());
+				dos.writeFloat(x);
+				dos.writeFloat(y);
+				dos.writeFloat(z);
+				dos.flush();
+				return null;
+			}
+		}).get();
 	}
 
-	public synchronized void dispatchTextEvent(int action, String text) throws IOException {
-		dos.write(DATA_COMMAND | TEXT_EVENT);
-		dos.writeInt(getNextCounter());
-		dos.writeInt(action);
-		dos.writeUTF(text);
-		dos.flush();
+	public synchronized void dispatchTextEvent(final int action, final String text)
+			throws InterruptedException, ExecutionException {
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.DATA | Event.TEXT);
+				dos.writeInt(getNextCounter());
+				dos.writeInt(action);
+				dos.writeUTF(text);
+				dos.flush();
+				return null;
+			}
+		}).get();
 	}
 
-	public synchronized void disconnect() throws IOException {
-		dos.write(CONTROL_COMMAND | DISCONNECT);
-		dos.flush();
-		dis.close();
-		dos.close();
-		terminate = true;
-		if (terminationListener != null) {
-			terminationListener.onTerminated(this);
-		}
+	public synchronized void disconnect()
+			throws InterruptedException, ExecutionException {
+		final FastClient endPoint = this;
+		executorService.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				dos.write(Command.CONTROL | Control.DISCONNECT);
+				dos.flush();
+				dis.close();
+				dos.close();
+				terminate = true;
+				if (terminationListener != null) {
+					terminationListener.onTerminated(endPoint);
+				}
+				return null;
+			}
+		}).get();
 	}
 
 	public synchronized boolean isConnected() {
@@ -357,13 +395,15 @@ public class FastClient implements Runnable {
 		}
 	}
 
-	public void handleInput() throws Exception {
+	public void handleInput()
+			throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+//		FastClient.assertNotRunningInMainThread();
 		byte command = dis.readByte();
-		switch (command & COMMAND_MASK) {
-		case CONTROL_COMMAND:
-			switch (command & CONTROL_MASK) {
-			case HANDSHAKE_START_CONTROL:
-				dos.write(COMMAND_MASK | HANDSHAKE_PUBLIC_KEY_CONTROL);
+		switch (command & Command.MASK) {
+		case Command.CONTROL:
+			switch (command & Control.MASK) {
+			case Control.HANDSHAKE_START:
+				dos.write(Command.MASK | Control.HANDSHAKE_PUBLIC_KEY);
 
 				PrivateKey privateKey = keypair.getPrivate();
 				PublicKey publicKey = keypair.getPublic();
@@ -394,27 +434,27 @@ public class FastClient implements Runnable {
 				dos = new DataOutputStream(cos);
 				break;
 
-			case CHECK_PROTOCOL_VERSION:
+			case Control.CHECK_PROTOCOL_VERSION:
 				// TODO check protocol version
 				float version = dis.readFloat();
 				if (protocolVersion == version) {
-					dos.write(STATUS_COMMAND | SUCCESS);
+					dos.write(Command.STATUS | Status.SUCCESS);
 				} else {
-					dos.write(STATUS_COMMAND | WRONG_PASSWORD);
+					dos.write(Command.STATUS | Status.WRONG_PASSWORD);
 				}
 				break;
 
-			case CONNECT:
+			case Control.CONNECT:
 				String password = dis.readUTF();
 				counter = dis.readInt();
 				if (expectedPassword.equals(password)) {
-					dos.write(STATUS_COMMAND | SUCCESS);
+					dos.write(Command.STATUS | Status.SUCCESS);
 				} else {
-					dos.write(STATUS_COMMAND | WRONG_PASSWORD);
+					dos.write(Command.STATUS | Status.WRONG_PASSWORD);
 				}
 				break;
 
-			case DISCONNECT:
+			case Control.DISCONNECT:
 				terminate = true;
 				dis.close();
 				dos.close();
@@ -425,7 +465,7 @@ public class FastClient implements Runnable {
 				break;
 			}
 			break;
-		case DATA_COMMAND:
+		case Command.DATA:
 			int partnerCounter = dis.readInt();
 			int nextMin = (counter + 1);
 			int nextMax = (counter + 10);
@@ -440,28 +480,28 @@ public class FastClient implements Runnable {
 				counterErrors = 0;
 				counter = partnerCounter;
 			}
-			switch (command & EVENT_MASK) {
-			case MOUSE_EVENT:
+			switch (command & Event.MASK) {
+			case Event.MOUSE:
 				eventHandler.handleMouseEvent(dis.readByte(), dis.readInt(), dis.readFloat(), dis.readFloat());
 				break;
 
-			case KEYBOARD_EVENT:
+			case Event.KEYBOARD:
 				eventHandler.handleKeyboardEvent(dis.readByte(), dis.readInt());
 				break;
 
-			case MEDIA_CONTROL_EVENT:
+			case Event.MEDIA_CONTROL:
 				eventHandler.handleMediaControlEvent(dis.readByte(), dis.readInt());
 				break;
 
-			case SCROLL_EVENT:
+			case Event.SCROLL:
 				eventHandler.handleScrollEvent(dis.readFloat());
 				break;
 
-			case ACCELERATION_EVENT:
+			case Event.ACCELERATION:
 				eventHandler.handleAccelerationEvent(dis.readFloat(), dis.readFloat(), dis.readFloat());
 				break;
 
-			case TEXT_EVENT:
+			case Event.TEXT:
 				eventHandler.handleTextEvent(dis.readInt(), dis.readUTF());
 				break;
 

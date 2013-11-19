@@ -72,6 +72,7 @@ public class RC4InputStream extends InputStream {
 
 	@Override
 	public int read() throws IOException {
+//		FastClient.assertNotRunningInMainThread();
 		return decrypt((byte) (in.read())) & 0xFF;
 	}
 

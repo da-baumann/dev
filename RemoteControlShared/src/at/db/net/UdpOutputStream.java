@@ -48,6 +48,7 @@ public class UdpOutputStream extends OutputStream {
 	}
 
 	public void assertSocket() throws SocketException {
+//		FastClient.assertNotRunningInMainThread();
 		if (socket == null) {
 			socket = new DatagramSocket();
 		}
@@ -55,6 +56,7 @@ public class UdpOutputStream extends OutputStream {
 
 	@Override
 	public void write(int b) throws IOException {
+//		FastClient.assertNotRunningInMainThread();
 		assertBuffer();
 		int nextPsition = buffer[0] + 1;
 		buffer[nextPsition] = (byte) b;
@@ -66,6 +68,7 @@ public class UdpOutputStream extends OutputStream {
 
 	@Override
 	public void flush() throws IOException {
+//		FastClient.assertNotRunningInMainThread();
 		assertBuffer();
 		if (buffer[0] > 0) {
 			DatagramPacket packet = new DatagramPacket(buffer, buffer[0] + 1, address, port);
@@ -77,6 +80,7 @@ public class UdpOutputStream extends OutputStream {
 
 	@Override
 	public void close() throws IOException {
+//		FastClient.assertNotRunningInMainThread();
 		if (socket != null) {
 			socket.close();
 			socket = null;

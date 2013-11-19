@@ -72,11 +72,13 @@ public class RC4OutputStream extends OutputStream {
 
 	@Override
 	public void write(int b) throws IOException {
+//		FastClient.assertNotRunningInMainThread();
 		out.write(encrypt((byte) b));
 	}
 
 	@Override
 	public void flush() throws IOException {
+//		FastClient.assertNotRunningInMainThread();
 		out.flush();
 	}
 

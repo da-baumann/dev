@@ -56,10 +56,10 @@ public class Debugger {
 		}
 	}
 
-	public static void error(Exception exception) {
+	public static void error(Throwable throwable) {
 		if (ERROR <= level) {
-			StringBuffer buffer = new StringBuffer(exception.getMessage());
-			for (StackTraceElement traceElement : exception.getStackTrace()) {
+			StringBuffer buffer = new StringBuffer(throwable.getMessage());
+			for (StackTraceElement traceElement : throwable.getStackTrace()) {
 				buffer.append("\n\tat " + traceElement);
 			}
 			write("[ERROR] ", buffer.toString());
@@ -78,10 +78,10 @@ public class Debugger {
 		}
 	}
 
-	public static void debug(Exception exception) {
+	public static void debug(Throwable throwable) {
 		if (DEBUG <= level) {
-			StringBuffer buffer = new StringBuffer(exception.getMessage());
-			for (StackTraceElement traceElement : exception.getStackTrace()) {
+			StringBuffer buffer = new StringBuffer(throwable.getMessage());
+			for (StackTraceElement traceElement : throwable.getStackTrace()) {
 				buffer.append("\n\tat " + traceElement);
 			}
 			write("[DEBUG] ", buffer.toString());

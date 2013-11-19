@@ -30,4 +30,5 @@ public class Const {
 	public static final int	BUTTON3_MASK			= 1 << 2;																		// 4;
 
 	public static final int	ANY_BUTTON				= BUTTON1_MASK | BUTTON2_MASK | BUTTON3_MASK;
+	
 }

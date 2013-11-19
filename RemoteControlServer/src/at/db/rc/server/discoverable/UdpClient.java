@@ -23,7 +23,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import at.db.rc.ClientHandler;
-import at.db.rc.FastClient;
+import at.db.rc.Commands;
 
 public class UdpClient {
 
@@ -34,12 +34,16 @@ public class UdpClient {
 		this.eventHandler = eventHandler;
 	}
 
+	public ClientHandler getEventHandler() {
+		return eventHandler;
+	}
+
 	public void handle(byte[] data) throws IOException {
 		trace("UdpClient.handle()");
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
 
 		byte command = dis.readByte();
-		if ((command & FastClient.COMMAND_MASK) == FastClient.DATA_COMMAND) {
+		if ((command & Commands.Command.MASK) == Commands.Command.DATA) {
 			int partnerCounter = dis.readInt();
 			int counter = partnerCounter + 2;
 			int counterErrors = 0;
@@ -56,28 +60,28 @@ public class UdpClient {
 				counterErrors = 0;
 				counter = partnerCounter;
 			}
-			switch (command & FastClient.EVENT_MASK) {
-			case FastClient.MOUSE_EVENT:
+			switch (command & Commands.Event.MASK) {
+			case Commands.Event.MOUSE:
 				eventHandler.handleMouseEvent(dis.readByte(), dis.readInt(), dis.readFloat(), dis.readFloat());
 				break;
 
-			case FastClient.KEYBOARD_EVENT:
+			case Commands.Event.KEYBOARD:
 				eventHandler.handleKeyboardEvent(dis.readByte(), dis.readInt());
 				break;
 
-			case FastClient.MEDIA_CONTROL_EVENT:
+			case Commands.Event.MEDIA_CONTROL:
 				eventHandler.handleMediaControlEvent(dis.readByte(), dis.readInt());
 				break;
 
-			case FastClient.SCROLL_EVENT:
+			case Commands.Event.SCROLL:
 				eventHandler.handleScrollEvent(dis.readFloat());
 				break;
 
-			case FastClient.ACCELERATION_EVENT:
+			case Commands.Event.ACCELERATION:
 				eventHandler.handleAccelerationEvent(dis.readFloat(), dis.readFloat(), dis.readFloat());
 				break;
 
-			case FastClient.TEXT_EVENT:
+			case Commands.Event.TEXT:
 				eventHandler.handleTextEvent(dis.readInt(), dis.readUTF());
 				break;
 			}

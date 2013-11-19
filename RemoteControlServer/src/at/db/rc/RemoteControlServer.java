@@ -72,6 +72,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
 import javax.net.ServerSocketFactory;
@@ -97,14 +98,14 @@ import com.google.zxing.qrcode.encoder.QRCode;
 
 public class RemoteControlServer implements Runnable, ITerminationListener {
 
-	public static final String						serverVersion				= "v0.2";
+	public static final String						serverVersion				= "v0.3";
 
 	private TrayIcon											trayIcon;
 	private ServerSocket									serversocket;
 	private Set<FastClient>								endPoints						= new HashSet<FastClient>();
 	private UdpClient											udpClient						= null;
 
-	private int														port								= 12121;
+	private int														port								= Parameters.DEFAULT_PORT;
 	private int														maxConnections			= 0;
 	private String												keyMd5;
 	private KeyPair												keypair;
@@ -146,6 +147,7 @@ public class RemoteControlServer implements Runnable, ITerminationListener {
 			error(e);
 		}
 		try {
+			tryGetPort();
 			initializeUdpClient();
 
 			generateKeyPair();
@@ -176,6 +178,22 @@ public class RemoteControlServer implements Runnable, ITerminationListener {
 		}
 	}
 
+	private void tryGetPort() {
+		String portProperty = System.getProperty("port");
+		if (portProperty != null) {
+			try {
+				int portInt = Integer.parseInt(portProperty);
+				if ((portInt > 0) && (portInt <= Character.MAX_VALUE)) {
+					port = portInt;
+				} else {
+					Debugger.error("port property can not be used as port: " + portProperty);
+				}
+			} catch (NumberFormatException e) {
+				Debugger.error("could not parse port property " + portProperty);
+			}
+		}
+	}
+
 	private void initializeUdpClient() {
 		debug("RemoteControlServer.initializeUdpClient()");
 		ClientHandler clientHandler = new ClientHandler();
@@ -186,7 +204,7 @@ public class RemoteControlServer implements Runnable, ITerminationListener {
 	private void startServerDiscoveryThread() {
 		info("RemoteControlServer.startServerDiscoveryThread()");
 		try {
-			DatagramSocket socket = new DatagramSocket(Parameters.DEFAULT_PORT);
+			DatagramSocket socket = new DatagramSocket(port);
 			serverDiscovery = new ServerDiscovery(socket, udpClient);
 			discoveryThread = new InteruptableSocketThread(serverDiscovery);
 			discoveryThread.start();
@@ -327,6 +345,7 @@ public class RemoteControlServer implements Runnable, ITerminationListener {
 				clientHandler.setKeyboardLayout(keyboardLayout);
 			}
 		}
+		udpClient.getEventHandler().setKeyboardLayout(keyboardLayout);
 		// info("os.name: " + System.getProperty("os.name"));
 		// info("os.version: " + System.getProperty("os.version"));
 		// info("user.home: " + System.getProperty("user.home"));
@@ -627,8 +646,14 @@ public class RemoteControlServer implements Runnable, ITerminationListener {
 				}
 				updateTrayMenu(connections);
 			}
-		} catch (IOException e) {
+		} catch (InterruptedException e) {
 			error(e);
+		} catch (ExecutionException e) {
+			if (e.getCause() != null) {
+				error(e.getCause());
+			} else {
+				error(e);
+			}
 		}
 	}
 
