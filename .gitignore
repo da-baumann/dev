@@ -1,0 +1,16 @@
+.idea/copyright
+.idea/libraries
+.idea/scopes
+.idea/.name
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/uiDesigner.xml
+.idea/workspace.xml
+*.iml
+/target
+/client/free/target
+/server/target
+/shared/target
+/zxing/target
